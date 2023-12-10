@@ -2,6 +2,10 @@
 
 This repository contains the code for a simple blog application built using Node.js, Express, Prisma, and JWT authentication. The application includes features such as user registration, authentication, post creation, and commenting.
 
+## STILL UNDER WORKING
+
+
+
 ## Getting Started
 
 ### Prerequisites
