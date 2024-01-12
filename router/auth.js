@@ -14,7 +14,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 
 
-router.post('/', async (req, res) => {
+router.post('/login', async (req, res) => {
     const {error} = loginvalidation(req.body);
     if (error) {
         res.status(404).json({'error': error.details[0].message});

@@ -9,35 +9,24 @@ const admin = require('../midlleware/admin');
 const auth = require('../midlleware/user_auth');
 const dotenv = require('dotenv');
 
-
-
-
 dotenv.config({path: '.env'})
 const JWT_SECRET = process.env.JWT_SECRET
 
 
-
-
-
-
-router.get('/', [auth, admin], async (req , res) => {
-    const allUser = await prisma.post.findMany({include: {author: true}});
+router.get('/allpost', async (req , res) => {
+    const allUser = await prisma.post.findMany();
         res.json(allUser);
 });
 
 
 
-
-
-router.get('/us', [auth, admin], async (req, res) => {
-    const allUser = await prisma.user.findMany({include: {Post: true}});
+router.get('/alluser',  async (req, res) => {
+    const allUser = await prisma.user.findMany();
     res.json(allUser);
 });
 
 
-
-
-router.post('/', async (req, res) => {
+router.post('/create-account', async (req, res) => {
     try {
         const {error} = uservalidation(req.body);
         if (error) {
@@ -56,7 +45,7 @@ router.post('/', async (req, res) => {
         const token = jwt.sign({id: user.id,isAdmin: user.isAdmin}, JWT_SECRET);
         res.status(201).json({user: user,token});
     } catch (error) {
-        res.status(400).json("cant process this one")
+        res.status(400).json({"msg" : "cant process this one"})
     }
 });
 
@@ -65,7 +54,7 @@ router.post('/', async (req, res) => {
 
 
 
-router.post('/post', auth, async (req, res) => {
+router.post('/create-post', auth, async (req, res) => {
     const {error} = postvalidation(req.body);
     if (error) {
         res.status(404).json({'error': error.details[0].message});
@@ -83,7 +72,7 @@ router.post('/post', auth, async (req, res) => {
 
 
 
-router.post('/comment', auth , async (req , res) => {
+router.post('/create-comment', auth , async (req , res) => {
     const { error } = commentvalidation(req.body);
     if(error){
         res.status(404).json({'error' : error.details[0].message});
