@@ -51,9 +51,6 @@ router.post('/create-account', async (req, res) => {
 
 
 
-
-
-
 router.post('/create-post', auth, async (req, res) => {
     const {error} = postvalidation(req.body);
     if (error) {
@@ -72,6 +69,7 @@ router.post('/create-post', auth, async (req, res) => {
 
 
 
+
 router.post('/create-comment', auth , async (req , res) => {
     const { error } = commentvalidation(req.body);
     if(error){
@@ -87,6 +85,30 @@ router.post('/create-comment', auth , async (req , res) => {
         res.status(200).json({'comment' : comment});
     }
 })
+
+
+
+router.delete('/delete-post', async (req, res) => {
+    try {
+        const postId = req.body.id;
+
+        // Delete comments associated with the post
+        await prisma.comment.deleteMany({ where: { postId } });
+
+        // Delete the post
+        const deletepost = await prisma.post.delete({ where: { id: postId } });
+
+        if (deletepost !== null) {
+            return res.status(202).json({ 'msg': "post deleted" , "success" : true });
+        } else {
+            return res.status(404).json({ 'msg': "can't delete this one" })
+        }
+        
+    } catch (error) {
+        console.error(error);  // Log the error
+        res.status(500).json({ "msg": "Internal Server Error" });
+    }
+});
 
 
 
@@ -124,6 +146,14 @@ function uservalidation(user) {
     };
     return Joi.validate(user, schema);
 }
+
+
+// function deletevalidation(user){
+//     const schema = {
+//         deletedPost : Joi.required()
+//     };
+//     return Joi.validate(user , schema)
+// }
 
 
 
