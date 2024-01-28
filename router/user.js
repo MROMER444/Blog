@@ -113,7 +113,6 @@ router.delete('/delete-post', async (req, res) => {
 
 
 
-
 function postvalidation(post) {
     const schema = {
         title: Joi.string(),
