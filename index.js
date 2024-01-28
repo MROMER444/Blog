@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client')
 // const prisma = new PrismaClient()
 const morgan = require('morgan')
 require('dotenv').config();
-
+//test
 
 const user = require('./router/user');
 const auth = require('./router/auth');

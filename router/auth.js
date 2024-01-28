@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
     }
 
     const {email,password} = req.body;
-    if (!bcrypt.compareSync(password, user.password)) {
+    if (!bcrypt.compareSync(password:bcrypt.hashSync(password , 10), user.password)) {
         res.status(404).json({'error': 'invalid email or password!'});
         return;
     }
