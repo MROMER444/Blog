@@ -112,6 +112,23 @@ router.delete('/delete-post', async (req, res) => {
 
 
 
+router.get('/user/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+    const result = await prisma.user.findUnique({ where: { id: parseInt(userId) } });
+    if (result) {
+        res.status(200).json({ "data": result });
+    } else {
+        res.status(404).json({ "data": {"records" : result} });
+    }
+    } catch (error) {
+        res.status(500).json({"msg" : "Internal Server Error"})
+    }
+});
+
+
+
+
 
 function postvalidation(post) {
     const schema = {
