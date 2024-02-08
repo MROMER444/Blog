@@ -1,5 +1,4 @@
-//hello from fedor
-//thi is a new line
+// this is from github
 const express = require('express');
 const router = express.Router();
 const {PrismaClient} = require('@prisma/client')
