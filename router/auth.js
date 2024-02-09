@@ -15,28 +15,31 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 
 router.post('/login', async (req, res) => {
-    const {error} = loginvalidation(req.body);
+    try {
+        const { error } = loginvalidation(req.body);
     if (error) {
-        res.status(404).json({'error': error.details[0].message});
-        return;
-    };
+        return res.status(404).json({ error: error.details[0].message });
+    }
 
-    let user = await prisma.user.findFirst({where: {email: req.body.email}});
+    const { email, password } = req.body;
+    let user = await prisma.user.findFirst({ where: { email: email } });
     if (!user) {
-        res.status(404).json({'error': 'invalid email or password!'});
-        return;
+        return res.status(404).json({ "msg": {"Invalid email or password!" : {"success" : false}} });
     }
 
-    const {email,password} = req.body;
-    if (!bcrypt.compareSync(password.bcrypt.hashSync(password , 10), user.password)) {
-        res.status(404).json({'error': 'invalid email or password!'});
-        return;
+    const passwordMatch = bcrypt.compareSync(password, user.password);
+    if (!passwordMatch) {
+        return res.status(404).json({ "msg": {"Invalid email or password!" : {"success" : false}} });
     }
-    const token = jwt.sign({id: user.id,isAdmin: user.isAdmin}, JWT_SECRET);
-    res.header('x-auth-togenerationToken', token)
-    res.json({'token': token});
 
-})
+    const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, JWT_SECRET);
+    res.header('x-auth-togenerationToken', token);
+    res.status(200).json({"token" : token  , "success" : true})
+    } catch (error) {
+        res.status(400).json({ "msg": "Internal Server Error" })
+    }
+});
+
 
 
 

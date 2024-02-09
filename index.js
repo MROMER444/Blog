@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const { PrismaClient } = require('@prisma/client')
 // const prisma = new PrismaClient()
-const morgan = require('morgan')
-require('dotenv').config();
+// const morgan = require('morgan')
+// require('dotenv').config();
 //test
 
 const user = require('./router/user');
@@ -15,15 +15,15 @@ app.use(express.json());
 app.use('/api' , user);
 app.use('/api/auth', auth);
 
-if (app.get('env') === 'development'){
-    process.env.DATABASE_URL = process.env.DATABASE_URL_DEV
-    app.use(morgan('tiny'));
-}else{
-    process.env.DATABASE_URL = process.env.DATABASE_URL_PROD
-}
+// if (app.get('env') === 'development'){
+//     process.env.DATABASE_URL = process.env.DATABASE_URL_DEV
+//     app.use(morgan('tiny'));
+// }else{
+//     process.env.DATABASE_URL = process.env.DATABASE_URL_PROD
+// }
 
 
-console.log('Environment:', app.get('env'));
+// console.log('Environment:', app.get('env'));
 
 
 const swaggerUi = require('swagger-ui-express')
