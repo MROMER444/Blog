@@ -15,16 +15,22 @@ dotenv.config({ path: '.env' })
 const JWT_SECRET = process.env.JWT_SECRET
 
 
-router.get('/allpost', auth , async (req, res) => {
+
+
+
+function setAuthorizationHeader(req, res) {
+    const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
+    res.header('Authorization', 'Bearer ' + token);
+}
+
+
+router.get('/allpost', auth, async (req, res) => {
     try {
+        setAuthorizationHeader(req, res);
         const allUser = await prisma.post.findMany();
         if (allUser.length === 0) {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "record": [] })
         } else {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "records": allUser })
         }
 
@@ -37,14 +43,11 @@ router.get('/allpost', auth , async (req, res) => {
 
 router.get('/alluser', auth, async (req, res) => {
     try {
+        setAuthorizationHeader(req, res);
         const allUser = await prisma.user.findMany();
         if (allUser.length === 0) {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "record": [] })
         } else {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "records": allUser })
         }
     } catch (error) {
@@ -81,6 +84,7 @@ router.post('/create-account', async (req, res) => {
 
 router.post('/create-post', auth, async (req, res) => {
     try {
+        setAuthorizationHeader(req, res);
         const { error } = postvalidation(req.body);
         if (error) {
             res.status(404).json({ 'error': error.details[0].message });
@@ -92,12 +96,8 @@ router.post('/create-post', auth, async (req, res) => {
         const authorId = decodeToken.id;
         const post = await prisma.post.create({ data: { title, content, authorId } })
         if (post) {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(201).json({ "record": { "post": post }, "success": true });
         } else {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(404).json({ "record": { "post": [], "success": false } })
         }
     } catch (error) {
@@ -110,6 +110,7 @@ router.post('/create-post', auth, async (req, res) => {
 
 router.post('/create-comment', auth, async (req, res) => {
     try {
+        setAuthorizationHeader(req, res);
         const { error } = commentvalidation(req.body);
         if (error) {
             res.status(404).json({ 'error': error.details[0].message });
@@ -121,12 +122,8 @@ router.post('/create-comment', auth, async (req, res) => {
         const authorId = decodeToken.id;
         const comment = await prisma.comment.create({ data: { content, postId, authorId } });
         if (comment) {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(201).json({ 'data': { "comment": comment }, "success": true });
         } else {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(404).json({ 'data': { "comment": "" }, "success": false });
         }
     } catch (error) {
@@ -137,19 +134,16 @@ router.post('/create-comment', auth, async (req, res) => {
 
 
 
-router.delete('/delete-post', auth , async (req, res) => {
+router.delete('/delete-post', auth, async (req, res) => {
     try {
+        setAuthorizationHeader(req, res);
         const postId = req.body.id;
         await prisma.comment.deleteMany({ where: { postId } });
         const deletepost = await prisma.post.delete({ where: { id: postId } });
 
         if (deletepost !== null) {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             return res.status(202).json({ 'msg': "post deleted", "success": true });
         } else {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             return res.status(404).json({ 'msg': "can't delete this one", "success": false })
         }
 
@@ -160,17 +154,14 @@ router.delete('/delete-post', auth , async (req, res) => {
 
 
 
-router.get('/user/:id', auth , async (req, res) => {
+router.get('/user/:id', auth, async (req, res) => {
     try {
+        setAuthorizationHeader(req, res);
         const userId = req.params.id;
         const result = await prisma.user.findUnique({ where: { id: parseInt(userId) } });
         if (!result) {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "record": { "user": [], "msg": `there is no user with this ID ${userId}` }, "success": false });
         } else {
-            const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "record": { "user": result }, "success": true });
         }
     } catch (error) {
