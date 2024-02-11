@@ -33,7 +33,7 @@ router.post('/login', async (req, res) => {
         }
 
         const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, JWT_SECRET);
-        res.header('x-auth-togenerationToken', token);
+        res.header('Authorization', 'Bearer ' + token);
         res.status(200).json({ "token": token, "success": true })
     } catch (error) {
         res.status(400).json({ "msg": "Internal Server Error" })
