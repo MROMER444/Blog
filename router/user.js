@@ -20,11 +20,11 @@ router.get('/allpost', auth , async (req, res) => {
         const allUser = await prisma.post.findMany();
         if (allUser.length === 0) {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "record": [] })
         } else {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "records": allUser })
         }
 
@@ -40,11 +40,11 @@ router.get('/alluser', auth, async (req, res) => {
         const allUser = await prisma.user.findMany();
         if (allUser.length === 0) {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "record": [] })
         } else {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "records": allUser })
         }
     } catch (error) {
@@ -93,11 +93,11 @@ router.post('/create-post', auth, async (req, res) => {
         const post = await prisma.post.create({ data: { title, content, authorId } })
         if (post) {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(201).json({ "record": { "post": post }, "success": true });
         } else {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(404).json({ "record": { "post": [], "success": false } })
         }
     } catch (error) {
@@ -122,11 +122,11 @@ router.post('/create-comment', auth, async (req, res) => {
         const comment = await prisma.comment.create({ data: { content, postId, authorId } });
         if (comment) {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(201).json({ 'data': { "comment": comment }, "success": true });
         } else {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(404).json({ 'data': { "comment": "" }, "success": false });
         }
     } catch (error) {
@@ -145,11 +145,11 @@ router.delete('/delete-post', auth , async (req, res) => {
 
         if (deletepost !== null) {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             return res.status(202).json({ 'msg': "post deleted", "success": true });
         } else {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             return res.status(404).json({ 'msg': "can't delete this one", "success": false })
         }
 
@@ -166,11 +166,11 @@ router.get('/user/:id', auth , async (req, res) => {
         const result = await prisma.user.findUnique({ where: { id: parseInt(userId) } });
         if (!result) {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "record": { "user": [], "msg": `there is no user with this ID ${userId}` }, "success": false });
         } else {
             const token = jwt.sign({ id: req.user.id, isAdmin: req.user.isAdmin }, JWT_SECRET);
-            res.header('x-auth-togenerationToken', token)
+            res.header('Authorization', 'Bearer ' + token);
             res.status(200).json({ "record": { "user": result }, "success": true });
         }
     } catch (error) {
